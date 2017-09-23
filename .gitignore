@@ -1,0 +1,10 @@
+#-------- VisualStudio --------
+Release
+Debug
+.vs
+
+#-------- VisualMicro --------
+__vm
+
+#-------- Others --------
+.class
