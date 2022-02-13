@@ -8,3 +8,6 @@ __vm
 
 #-------- Others --------
 .class
+/*.user
+/__vm
+/*.class

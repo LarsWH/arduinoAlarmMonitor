@@ -5,8 +5,8 @@
 #include <Dns.h>
 #include <Dhcp.h>
 #include <Arduino.h>
-
 #include <SPI.h>
+#include <string.h>
 
 // When shifting between ethernet drivers in Eclipse environment, remember to set this:
 // Arduino -> Add a library to the selected project -> Ethernet/UIPEthernet (NOT ethercard!)
@@ -158,11 +158,18 @@ void detectState() {
 
 EthernetClient client;
 
+void PrintHelp()
+{
+
+}
+
 void communicate() {
-	#define CMD_STATE "state"
-	#define CMD_INPUT "input"
-	#define CMD_Z1    "z1"
-	#define CMD_Z2    "z2"
+	#define CMD_STATE  "state"
+	#define CMD_INPUT  "input"
+	#define CMD_Z1     "z1"
+	#define CMD_Z2     "z2"
+	#define CMD_OUTPUT "output"
+	#define CMD_HELP   "help"
 
 	Ethernet.maintain(); // Keep my name updated in the DHCP server whenever the lease time expires
 
@@ -199,7 +206,34 @@ void communicate() {
 						respons = "z2 OK";
 						Serial.println(respons);
 						client.println(respons);
+					} else if (command.equals(CMD_HELP)) {
+						respons = "cppversion: " + String(__cplusplus); Serial.println(respons); client.println(respons);
+					} else if (command.startsWith(CMD_OUTPUT)) {
+						respons = "command:" + command;
+						Serial.println(respons);
+						client.println(respons);
+						char cmd[11];
+						char signal[11];
+						char state[11];
+						int elements = sscanf(command.c_str(), "%10s %10s %10s", cmd, signal, state);
+						if (elements == 3) {
+
+
+							{ String val = String(signal); 
+							  int pin = val.toInt();
+                       val = String(state);
+                       int st = val.toInt();
+                       digitalWrite(pin, st);
+							}
+
+
+							{String val = String(cmd); Serial.println(val); client.println(val); }
+							{String val = String(signal); Serial.println(val); client.println(val); }
+							{String val = String(state); Serial.println(val); client.println(val); }
+							{String val = String(state); Serial.println(val); client.println(val); }
+						}
 					} else {
+						PrintHelp();
 						Serial.println(respons);
 						client.println(respons);
 					}
@@ -226,7 +260,7 @@ void returnInputStatus() {
 	int door = digitalRead(IN_PUSH);
 
 	char str[50];
-	sprintf(str,  "armed:%d shell:%d disa:%d alarm(analog value):%d door:%d", armed, shell, disa, alarm, door);
+	sprintf(str,  "armed7:%d shell6:%d disa5:%d alarm17(analog value):%d door9:%d", armed, shell, disa, alarm, door);
 	client.println(str);
 	Serial.println(str);
 }
